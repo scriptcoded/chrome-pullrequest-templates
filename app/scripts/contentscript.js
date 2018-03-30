@@ -33,6 +33,15 @@
     var el = null;
     var isBitbucketProseEditor = false;
 
+    // https://bitbucket.org/elma-group/elma-core/pull-requests/new?source=elma-group%2Felma-core%3A%3AELMA-20-fix-errors-on-register-and-regis
+    if (isBB && window.location.href.match(/elma-group\/elma-core\/pull-requests\/new/)) {
+      var sourceParts = getParameterByName('source').split('/')
+      var branchParts = sourceParts[sourceParts.length - 1].split('::')
+      var branch = branchParts[branchParts.length - 1]
+
+      template = template.replaceAll('{{branch}}', branch)
+    }
+
     if (isGH && options.githubEnabled) {
       el = document.getElementById('pull_request_body');
     } else if (isBB && options.bitbucketEnabled) {
@@ -126,3 +135,18 @@
 
   }
 })();
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.split(search).join(replacement);
+};
